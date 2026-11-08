@@ -6,11 +6,10 @@
 |:---|:---|
 | `out/信号与线性系统-复习资料.pdf` | 最终 PDF，A4，105 页（同一文件另存为 `out/signal-linear-review.pdf`） |
 | `out/signal-linear-review.tex` | pandoc 生成的 LaTeX 源 |
-| `src/SignalLinear-复习资料.md` | 唯一真源（Markdown），由 `work/draft/` 各分册拼接而成 |
-| `work/draft/part0..part4.md` | 分册源码：前言 / 第 1-2 章 / 第 3-4 章 / 第 5-6 章 / 三个附录 |
-| `work/draft/*.report.md` | 各撰写者的交付报告（含自检、视觉核对页码、遗留问题） |
-| `build/build.sh` | 构建脚本 |
-| `work/assemble.sh` | 分册拼接脚本 |
+| `src/*.md` | **唯一真源**，按章拆成 10 份分册（`00-前言` … `09-附录C`），排序即正文顺序 |
+| `build/stub-body.md` | 一行 `\input{body}`，是模板主文件的正文占位符 |
+| `build/build.sh` | 构建脚本：逐份转 tex → 拼接 → 模板生成主文件 → latexmk |
+| `work/reports/*.report.md` | 各撰写者的交付报告（含自检、视觉核对页码、遗留问题），历史记录 |
 | `work/STYLE.md` | 撰写规范（术语、记号、结构契约） |
 | `work/txt/` | 14 份原始 PDF 的文本抽取结果（备查） |
 
@@ -18,9 +17,13 @@
 
 ```bash
 cd /home/chilly/Projects/notes/SignalLinear
-bash work/assemble.sh     # work/draft/*.md -> src/SignalLinear-复习资料.md
 bash build/build.sh       # src/*.md -> out/signal-linear-review.{tex,pdf}
 ```
+
+构建分五步：每份 `src/*.md` 单独 pandoc 成**正文片段**（`build/tmp/frag-*.tex`）→ 按文件名拼成
+`build/tmp/body.tex` → 用 eisvogel 模板生成带导言区、封面、目录的主文件，正文位置放 `\input{body}`
+→ latexmk + lualatex → 拷贝到 `out/`。逐份转换的三个坑（缺 `longtable`、`\input` 找不到 body、
+六章同名小节产生重复 `\label`）及其处理见 `build/README.md`。
 
 `build/build.sh` 内置两个必须的环境修正，手工敲 pandoc 时容易漏：
 
@@ -44,17 +47,25 @@ bash build/build.sh       # src/*.md -> out/signal-linear-review.{tex,pdf}
 **决策 2 — 响应符号统一为 $y(t)$。**
 课本与作业原卷记作 $r(t)$，资料统一为 $y(t)$，并在前言记号表里明确写出这层对应关系。第 1、2 章初稿全篇用 $r(t)$，第 3–6 章用 $y(t)$，现已全篇收口（`r_{zi}`/`r_{zs}`/`r(t)` 在正文中的残留为 0，仅前言与附录 C 各保留一处刻意对照说明）。极点的虚部另用 $\omega_{i}$，与基频 $\omega_{0}$ 区分。
 
-**决策 3 — 行间公式不编号。**
+**决策 3 — 正文拆成 10 份分册，逐份转 LaTeX 后合并编译。**
+单文件 4400 行的 Markdown 难以维护，改为按一级标题拆分：`00-前言`、`01-绪论` … `06-系统函数`、
+`07/08/09-附录`。构建时每份单独 pandoc 成正文片段再拼接——因为 pandoc 一次只能产出一个完整文档。
+这一改动带来三处必须处理的副作用，均已解决（`longtable` 缺失 → `-V tables=true`；`\input{body}`
+定位 → `TEXINPUTS`；六章同名小节重复 `\label` → 片段转换关掉 `auto_identifiers`）。
+迁移前后做了回归对比：PDF 文本层 9408 → 9405 行，差异仅附录标题的空格与断行（新版更忠实于源码），
+页数、字体、错误数完全一致。
+
+**决策 4 — 行间公式不编号。**
 pandoc-crossref 保持启用（后续要加图表编号或公式引用时可直接用），但正文不引用公式编号，故未给公式打 `{#eq:}` 标签。理由：复习资料以"题型"为导航单元，公式编号的检索价值低于表格与题型编号。
 
-**决策 4 — 波形题不插图。**
+**决策 5 — 波形题不插图。**
 原题波形是位图，复习资料改用分段函数 + 关键点坐标 + 四界点判据描述（`$(t_k,x_k)\to(t_0+t_k/a,\,Ax_k)$`、卷积积分限的四界点 $a+c,a+d,b+c,b+d$），保证脱离原图也能照着算。
 
 ## 已知限制（如实记录）
 
 1. **体量超出预估**：规划时估 60–80 页，实际 105 页。增量来自 33 个题型全部按"题型特征/解题步骤/例题完整精解/同类题"四块展开（正文 84 页）与附录 B 公式速查 9 页（原定 5–7 页）。
 2. **部分题面仍依赖原卷位图**：附加作业 1 第 9、10 题的波形刻度标注、附加作业 2 第 2 题的 $x(t)$ 形状属图像内容，正文只给方法与该题已确认的解答数据，未虚构坐标。
-3. **第 6 章课件是学生版**，正文对空缺处（罗斯判据递推、两个例题的完整表、一阶/高阶极点稳定条件、反馈系统一节）按标准教材补齐，逐条记在 `work/draft/part3.report.md`。
+3. **第 6 章课件是学生版**，正文对空缺处（罗斯判据递推、两个例题的完整表、一阶/高阶极点稳定条件、反馈系统一节）按标准教材补齐，逐条记在 `work/reports/part3.report.md`。
 4. **信号流图与梅森公式**在课件中未涉及，故未收录。
 5. 代码块无底色框（eisvogel 的 `Shaded` 为空环境），本文档不使用代码块，无影响。
 6. 编译期 10 条 warning 无害：`scrlayer-scrpage \headheight too low`、`csquotes` 无中文样式、`microtype`/`luatexja` patch 提示等。
@@ -69,6 +80,7 @@ pandoc-crossref 保持启用（后续要加图表编号或公式引用时可直�
 | Overfull \hbox > 20pt | 0 |
 | 字体嵌入 | `NotoSerifCJKsc-Regular/Bold`、`LibertinusSerif/Sans/Math` 全部 CID Type 0C 内嵌，非 Type3 |
 | 标题结构 | 6 章 × 4 节 + 33 个题型，无被 pandoc 转义成 `\#\#\#` 的标题（该坑已专项检查） |
+| 构建方式 | 10 份分册逐份转 tex 后合并；主文件导言区与迁移前的单文件构建逐字节一致 |
 | 作业覆盖 | 附加作业 1（15 题中本册相关 15 处引用）、2、3、4、6 全部题号在文中出现，覆盖面 100% |
 | 记号一致性 | `r_{zi}`/`r_{zs}` 残留 0；数字节引用残留 0（仅保留"课件 2.8/2.9 节"这类课件引用） |
 
