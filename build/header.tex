@@ -1,0 +1,12 @@
+% 中文段落排版：eisvogel 在 preamble 末尾无条件设置 \parindent=0pt，
+% 因此必须在 \AtBeginDocument 中覆盖，否则首行缩进失效。
+\usepackage{indentfirst}
+\AtBeginDocument{%
+  \setlength{\parindent}{2em}%
+  \setlength{\parskip}{0pt}%
+}
+% 表格：略增行高，避免中文与数学符号贴边
+\renewcommand{\arraystretch}{1.25}
+% 中文断行与标点压缩（luatexja 分支生效后的细化设置）
+\ltjsetparameter{jacharrange={-2,-3}}
+\ltjsetparameter{xkanjiskip=0pt plus .4pt minus .4pt}

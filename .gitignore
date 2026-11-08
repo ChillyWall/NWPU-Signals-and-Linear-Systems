@@ -1,0 +1,18 @@
+# 构建中间产物与 LaTeX 字体缓存：体积大、可完全重建
+build/tmp/
+work/pipeline-selftest/
+
+# 视觉核对用的页面渲染图与 PDF 抽取的临时文本（可重新生成）
+work/img/
+
+# 工具侧产物
+.dsh-vision-router/
+
+# LaTeX 中间文件（若在源码目录生成）
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.out
+*.toc
+*.synctex.gz
