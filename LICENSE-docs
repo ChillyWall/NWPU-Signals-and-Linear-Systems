@@ -1,0 +1,46 @@
+# 文档许可 / Documentation License
+
+本仓库的**复习资料正文**（`src/` 下的全部 Markdown）与**由其生成的 PDF**（`out/` 下的
+`signal-linear-review.pdf` / `信号与线性系统-复习资料.pdf`）采用
+
+**Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International
+（CC BY-NC-SA 4.0，知识共享 署名-非商业性使用-相同方式共享 4.0 国际）**
+
+许可证法律文本（官方，唯一权威版本）：
+<https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode>
+
+## 你可以
+
+- **共享**：以任何媒介或格式复制、发行本作品。
+- **演绎**：修改、转换或以本作品为基础进行创作。
+
+只要遵守下列条款，许可人不能撤销这些自由。
+
+## 你必须遵守
+
+| 条款 | 含义 |
+|:---|:---|
+| **署名（BY）** | 必须给出适当署名、提供许可证链接，并说明是否作出修改。 |
+| **非商业性使用（NC）** | 不得将本作品用于商业目的（包括售卖、付费课程、付费资料包等）。 |
+| **相同方式共享（SA）** | 若你修改、转换或以本作品为基础创作，你的贡献必须以**相同许可证**分发。 |
+| **不得增加额外限制** | 不得使用法律条款或技术措施限制他人做许可证允许的事。 |
+
+## 建议的署名格式
+
+> 《信号与线性系统 · 期末复习资料》，ChillyWall，
+> <https://github.com/ChillyWall/NWPU-Signals-and-Linear-Systems>，
+> 采用 CC BY-NC-SA 4.0 许可。
+
+## 不在本许可范围内
+
+- **构建脚本与配置**（`build/`、`work/`、`docs/`）：采用 MIT 许可，见 [`LICENSE`](LICENSE)。
+- **课程课件、作业原卷及其解答**：著作权归原作者与授课单位所有，**本仓库未收录**。
+  本资料的作业题解为自行推导与回代验算的结果，不是官方答案。
+- 仓库内引用的第三方模板与宏包（Eisvogel、pandoc、TeX Live 等）各自遵循其原有许可。
+
+---
+
+This work is licensed under CC BY-NC-SA 4.0. You are free to share and adapt
+the material for non-commercial purposes, provided you give appropriate credit,
+link to the license, and distribute your contributions under the same license.
+Build tooling under `build/`, `work/` and `docs/` is MIT-licensed; see `LICENSE`.

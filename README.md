@@ -1,90 +1,160 @@
-# 《信号与线性系统》期末复习资料 — 交付说明
+# 信号与线性系统 · 期末复习资料
 
-## 交付物
+> 西北工业大学软件学院《信号与线性系统》期末复习手册：**105 页 PDF**，六章考点清单、33 个题型精解、公式速查附录。源码是 Markdown，pandoc + LaTeX 一键成书。
 
-| 文件 | 说明 |
+<p align="center">
+  <a href="out/信号与线性系统-复习资料.pdf"><strong>📄 下载 PDF（105 页）</strong></a>
+  ·
+  <a href="#快速开始">自行构建</a>
+  ·
+  <a href="build/README.md">构建细节</a>
+</p>
+
+<p align="center"><em>
+A 105-page Chinese study guide for <strong>Signals and Linear Systems</strong> (NWPU, School of Software),
+written in Markdown and typeset with pandoc + LuaLaTeX + the Eisvogel template.<br>
+Content: 6 chapters × (exam-point checklist / core formulas / 33 worked problem types / common pitfalls),
+plus comparison and formula-reference appendices.
+</em></p>
+
+![封面](docs/preview-cover.png)
+
+## 这是什么
+
+一份按考试组织的复习资料，不是教材的摘要，而是把一门课压成**能查、能背、能照着做题**的三层结构。全书的骨架只有一句话：**给定激励与 LTI 系统，求响应**——时域靠卷积、频域靠 $H(\mathrm{j}\omega)$、复频域靠 $H(s)$，三套坐标描述同一件事。
+
+| 层级 | 内容 |
 |:---|:---|
-| `out/信号与线性系统-复习资料.pdf` | 最终 PDF，A4，105 页（同一文件另存为 `out/signal-linear-review.pdf`） |
-| `out/signal-linear-review.tex` | pandoc 生成的 LaTeX 源 |
-| `src/*.md` | **唯一真源**，按章拆成 10 份分册（`00-前言` … `09-附录C`），排序即正文顺序 |
-| `build/stub-body.md` | 一行 `\input{body}`，是模板主文件的正文占位符 |
-| `build/build.sh` | 构建脚本：逐份转 tex → 拼接 → 模板生成主文件 → latexmk |
-| `work/reports/*.report.md` | 各撰写者的交付报告（含自检、视觉核对页码、遗留问题），历史记录 |
-| `work/STYLE.md` | 撰写规范（术语、记号、结构契约） |
-| `work/txt/` | 14 份原始 PDF 的文本抽取结果（备查） |
+| 每章开头 | **考点清单**：一张表说明考什么、怎么考、多重（★–★★★） |
+| 每章主体 | **核心概念与公式**：结论 + 成立条件 + 性质表（全书 45 张表、466 个行间公式） |
+| 每章核心 | **典型题型与解法**：题型特征 / 解题步骤 / 作业原题完整精解 / 同类题思路 |
+| 每章收尾 | **易错点**：作业里真实踩过的坑 |
+| 附录 A | 专题横向对比：同一问题的三条路径、三大变换性质对照、15 个信号的三列变换对、系统特性判据对照、选题决策树 |
+| 附录 B | 公式速查：7 组表，考前一天翻的 |
+| 附录 C | 易错点 46 条总汇，按概念 / 运算 / 记号三类 |
 
-## 重建方法
+章节与课程一致：绪论 · 时域分析 · 正交分解（傅里叶级数）· 频域分析 · 复频域分析（拉普拉斯变换）· 系统函数（零极点与罗斯判据）。作业题解覆盖附加作业 1/2/3/4/6 全部题号，共 58 处引用。
+
+## 预览
+
+| 目录 | 卷积积分限：四界点判据 |
+|:---:|:---:|
+| ![目录](docs/preview-toc.png) | ![内容页](docs/preview-page.png) |
+
+## 快速开始
+
+### 依赖
+
+| 依赖 | 版本 / 说明 |
+|:---|:---|
+| [pandoc](https://pandoc.org/) | 3.x（开发时用 3.7） |
+| [Eisvogel 模板](https://github.com/Wandmalfarbe/pandoc-latex-template) | `eisvogel.latex` 放进 pandoc 数据目录的 `templates/`（Linux 默认 `~/.local/share/pandoc/templates/`） |
+| [pandoc-crossref](https://github.com/lierdakil/pandoc-crossref) | 放进 `PATH`，或放到 pandoc 数据目录的 `filters/`（脚本按 PATH → `$PANDOC_DATA_DIR` → XDG 默认目录依次探测） |
+| TeX Live | 需 `lualatex`、`latexmk`；含 KOMA-Script、`luatexja`、`booktabs`、`longtable` |
+| 字体 | 中文 **Noto Serif CJK SC**，西文 **Libertinus Serif / Sans / Mono / Math** |
+
+Debian/Ubuntu 上大致是：
 
 ```bash
-cd /home/chilly/Projects/notes/SignalLinear
-bash build/build.sh       # src/*.md -> out/signal-linear-review.{tex,pdf}
+sudo apt install pandoc texlive-luatex texlive-latex-extra texlive-lang-chinese \
+                 fonts-noto-cjk fonts-libertinus
+
+# Eisvogel 模板（pandoc 数据目录，Linux 默认为 ~/.local/share/pandoc）
+PANDOC_DIR="${PANDOC_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/pandoc}"
+mkdir -p "$PANDOC_DIR/templates"
+curl -L -o "$PANDOC_DIR/templates/eisvogel.latex" \
+  https://raw.githubusercontent.com/Wandmalfarbe/pandoc-latex-template/master/eisvogel.latex
 ```
 
-构建分五步：每份 `src/*.md` 单独 pandoc 成**正文片段**（`build/tmp/frag-*.tex`）→ 按文件名拼成
-`build/tmp/body.tex` → 用 eisvogel 模板生成带导言区、封面、目录的主文件，正文位置放 `\input{body}`
-→ latexmk + lualatex → 拷贝到 `out/`。逐份转换的三个坑（缺 `longtable`、`\input` 找不到 body、
-六章同名小节产生重复 `\label`）及其处理见 `build/README.md`。
+> 模板与字体是两条硬约束：换字体要改 `build/build.sh` 里的 `-V CJKmainfont`；换模板要保证它仍有 `$body$` 占位，否则脚本里的 `\input{body}` 校验会直接报错退出。
 
-`build/build.sh` 内置两个必须的环境修正，手工敲 pandoc 时容易漏：
+### 构建
 
-1. `TEXMFVAR` / `TEXMFCACHE` 必须指向可写目录（本机 `~/.texlive2026` 不可写，
-   否则 luaotfload 报 `no writeable cache path` 直接失败）；
-2. lualatex 的 jobname 不能含 CJK，脚本会把中文输出基名消毒成 ASCII 再编译。
+```bash
+git clone https://github.com/ChillyWall/NWPU-Signals-and-Linear-Systems.git
+cd NWPU-Signals-and-Linear-Systems
+bash build/build.sh          # -> out/signal-linear-review.pdf
+```
+
+单次构建约 20 秒（首次会慢一些，`luaotfload` 要建字体缓存）。脚本会打印页数、错误数、缺字数与溢出统计，任何一项异常都以非 0 退出。
+
+## 仓库结构
+
+```
+src/                      ← 唯一真源，按章拆成 10 份分册，文件名排序即正文顺序
+  00-前言.md
+  01-绪论.md … 06-系统函数.md
+  07-附录A-专题横向对比.md  08-附录B-公式速查.md  09-附录C-易错点.md
+build/
+  build.sh                ← 五步流水线：逐份转 tex → 拼接 → 生成主文件 → 编译 → 校验
+  stub-body.md            ← 正文占位符（一行 \input{body}），不要删
+  header.tex              ← 中文首行缩进、表格行高、luatexja 断行参数
+  README.md               ← 参数逐条解释 + 分册构建的三个坑
+out/                      ← 构建产物（已提交，可直接下载）
+  signal-linear-review.pdf / 信号与线性系统-复习资料.pdf
+  signal-linear-review.tex
+docs/                     ← README 用的预览图
+work/
+  header.yaml             ← 文档元数据（标题/作者/日期/纸张/行距）唯一定义处
+  STYLE.md                ← 写作规范：结构模板、术语与记号统一表、数学书写红线
+  reports/                ← 撰写阶段的交付报告（含视觉核对记录、遗留问题）
+  skeleton.md             ← 管线自检用骨架
+```
 
 ## 排版规格
 
-- 引擎：`latexmk` + `lualatex`（LuaTeX 1.24）
-- 模板：`eisvogel.latex`
-- 中文：`Noto Serif CJK SC`；西文：`Libertinus Serif` / `Sans` / `Mono`；数学：`Libertinus Math`
-- 中文排版：`luatexja-fontspec` 分支，首行缩进 2 字符（`build/header.tex` 用 `\AtBeginDocument` 覆盖模板的 `\parindent=0pt`），行距 1.4，`\arraystretch=1.25`
-- 交叉引用：`pandoc-crossref` 已接入（`-F ~/.local/share/pandoc/filters/pandoc-crossref`），编号前缀置空交给正文自行书写；正文实际**未使用** `[@eq:]` 引用，见"决策 3"
-
-## 关键决策
-
-**决策 1 — 编号全部交给 LaTeX。**
-标题里不写节号，交叉引用不写节号。原草稿曾有两套问题：手写节号与 LaTeX 编号叠加成"1.2.1 1.1 信号的分类"；以及前言因用 `\section*` 使其子节被编成 0.1–0.5。现在的层级是：章 `1`–`6`（与课程章号一致）→ 节 `1.1 考点清单` 等 → 小节 `1.2.1` 等；前言与三个附录不编号。正文引用改成按小节名引用（"见'卷积积分限的确定'一节"），因此任何重编号都不会让引用失效。
-
-**决策 2 — 响应符号统一为 $y(t)$。**
-课本与作业原卷记作 $r(t)$，资料统一为 $y(t)$，并在前言记号表里明确写出这层对应关系。第 1、2 章初稿全篇用 $r(t)$，第 3–6 章用 $y(t)$，现已全篇收口（`r_{zi}`/`r_{zs}`/`r(t)` 在正文中的残留为 0，仅前言与附录 C 各保留一处刻意对照说明）。极点的虚部另用 $\omega_{i}$，与基频 $\omega_{0}$ 区分。
-
-**决策 3 — 正文拆成 10 份分册，逐份转 LaTeX 后合并编译。**
-单文件 4400 行的 Markdown 难以维护，改为按一级标题拆分：`00-前言`、`01-绪论` … `06-系统函数`、
-`07/08/09-附录`。构建时每份单独 pandoc 成正文片段再拼接——因为 pandoc 一次只能产出一个完整文档。
-这一改动带来三处必须处理的副作用，均已解决（`longtable` 缺失 → `-V tables=true`；`\input{body}`
-定位 → `TEXINPUTS`；六章同名小节重复 `\label` → 片段转换关掉 `auto_identifiers`）。
-迁移前后做了回归对比：PDF 文本层 9408 → 9405 行，差异仅附录标题的空格与断行（新版更忠实于源码），
-页数、字体、错误数完全一致。
-
-**决策 4 — 行间公式不编号。**
-pandoc-crossref 保持启用（后续要加图表编号或公式引用时可直接用），但正文不引用公式编号，故未给公式打 `{#eq:}` 标签。理由：复习资料以"题型"为导航单元，公式编号的检索价值低于表格与题型编号。
-
-**决策 5 — 波形题不插图。**
-原题波形是位图，复习资料改用分段函数 + 关键点坐标 + 四界点判据描述（`$(t_k,x_k)\to(t_0+t_k/a,\,Ax_k)$`、卷积积分限的四界点 $a+c,a+d,b+c,b+d$），保证脱离原图也能照着算。
-
-## 已知限制（如实记录）
-
-1. **体量超出预估**：规划时估 60–80 页，实际 105 页。增量来自 33 个题型全部按"题型特征/解题步骤/例题完整精解/同类题"四块展开（正文 84 页）与附录 B 公式速查 9 页（原定 5–7 页）。
-2. **部分题面仍依赖原卷位图**：附加作业 1 第 9、10 题的波形刻度标注、附加作业 2 第 2 题的 $x(t)$ 形状属图像内容，正文只给方法与该题已确认的解答数据，未虚构坐标。
-3. **第 6 章课件是学生版**，正文对空缺处（罗斯判据递推、两个例题的完整表、一阶/高阶极点稳定条件、反馈系统一节）按标准教材补齐，逐条记在 `work/reports/part3.report.md`。
-4. **信号流图与梅森公式**在课件中未涉及，故未收录。
-5. 代码块无底色框（eisvogel 的 `Shaded` 为空环境），本文档不使用代码块，无影响。
-6. 编译期 10 条 warning 无害：`scrlayer-scrpage \headheight too low`、`csquotes` 无中文样式、`microtype`/`luatexja` patch 提示等。
-
-## 质量验收（实测数据）
-
-| 项目 | 结果 |
+| 项目 | 取值 |
 |:---|:---|
-| 页数 / 纸张 | 105 页 / A4 595.276×841.89 pt |
-| 编译错误 | 0 |
-| 缺字（Missing character） | 0（★ 151 处、①②③ 各 3 处全部正常渲染） |
-| Overfull \hbox > 20pt | 0 |
-| 字体嵌入 | `NotoSerifCJKsc-Regular/Bold`、`LibertinusSerif/Sans/Math` 全部 CID Type 0C 内嵌，非 Type3 |
-| 标题结构 | 6 章 × 4 节 + 33 个题型，无被 pandoc 转义成 `\#\#\#` 的标题（该坑已专项检查） |
-| 构建方式 | 10 份分册逐份转 tex 后合并；主文件导言区与迁移前的单文件构建逐字节一致 |
-| 作业覆盖 | 附加作业 1（15 题中本册相关 15 处引用）、2、3、4、6 全部题号在文中出现，覆盖面 100% |
-| 记号一致性 | `r_{zi}`/`r_{zs}` 残留 0；数字节引用残留 0（仅保留"课件 2.8/2.9 节"这类课件引用） |
+| 引擎 | `latexmk` + `lualatex`（LuaTeX） |
+| 模板 | Eisvogel（KOMA-Script `scrartcl`），封面 / 目录 / 页眉页脚 |
+| 中文 | `Noto Serif CJK SC`，`luatexja` 分支，首行缩进 2 字符，行距 1.4 |
+| 西文 / 数学 | Libertinus Serif / Sans / Mono / Math |
+| 交叉引用 | `pandoc-crossref` 已接入；编号前缀置空，由正文书写 |
+| 页面 | A4，公式不缩排，表格 booktabs 风格 |
 
-## 验收抽查记录
+## 为什么正文拆成 10 份
 
-- 与印刷解答逐项核对：附加作业 6 第 8 题稳定域 $0<K<16$（正文一致）、第 9 题 $G(s)=\dfrac{s}{(s+a)(s+3a)(s+4a)}$（正文一致）；附加作业 1 第 4 题方程 $\dfrac{\mathrm{d}^{2}y}{\mathrm{d}t^{2}}+2y\dfrac{\mathrm{d}y}{\mathrm{d}t}-3y=e$ 判定为"非线性 / 时不变"。
-- 视觉抽检：封面、目录、考点清单表页、附录 A.2 对照表页、附录 C 页均无溢出、无未解析源码、无缺字。
+4400 行的单文件难以维护，所以按一级标题拆分。构建时**每份单独 pandoc 成"正文片段"**（不带导言区），再拼成 `body.tex`，由模板生成的主文件用 `\input{body}` 引入——因为 pandoc 一次只能产出一个完整文档。
+
+这么拆会踩三个坑，仓库里都已处理（细节见 [`build/README.md`](build/README.md)）：
+
+| 坑 | 现象 | 处理 |
+|:---|:---|:---|
+| 片段没有导言区 | `Environment longtable undefined`（宏包由 pandoc 按"文档含表"条件注入） | 生成主文件时加 `-V tables=true` |
+| `\input{body}` 定位 | 找不到 `body.tex`（lualatex 的工作目录是仓库根） | 编译前 `export TEXINPUTS=build/tmp:` |
+| 分册各自生成标题锚点 | 六章同名的"考点清单/易错点"产生重复 `\label`，目录链接指向错页 | 片段转换关闭 `markdown-auto_identifiers` |
+
+## 已知限制
+
+- **体量** 105 页，超出最初 60–80 页的预估；题型全部按四块展开是主要原因。
+- **少数题面依赖原卷位图**：附加作业 1 第 9/10 题的波形刻度、附加作业 2 第 2 题的 $x(t)$ 形状，正文只给方法与已确认的解答数据，未虚构坐标。
+- **第 6 章课件是学生版**，罗斯判据递推、两个例题完整表、反馈系统一节按标准教材补齐，逐条记在 `work/reports/part3.report.md`。
+- **信号流图与梅森公式**在课件中未涉及，故未收录。
+- 代码块无底色框（Eisvogel 的 `Shaded` 是空环境）；本文档不使用代码块，无影响。
+
+## 来源与致谢
+
+- 课程：西北工业大学软件学院《信号与线性系统》（2026 版课件）。
+- 教材体系：郑君里《信号与系统》。
+- 本仓库**不包含**课程原始课件与作业 PDF；正文是基于课堂内容的个人整理与再表述，作业题为自行推导并回代验算的结果，**不是官方答案**。若与课堂或教师讲法不一致，以官方材料为准。
+
+## 许可证
+
+本仓库是混合内容，按两部分授权：
+
+| 范围 | 许可证 |
+|:---|:---|
+| 构建脚本、配置与文档辅助（`build/`、`work/`、`docs/`） | [MIT](LICENSE) |
+| 复习资料正文与生成的 PDF（`src/`、`out/`） | [CC BY-NC-SA 4.0](LICENSE-docs) |
+
+转载或改编正文请保留署名并注明出处，且不得用于商业目的。课程课件、作业原卷及其解答的著作权归原作者与授课单位所有。
+
+## 贡献
+
+欢迎勘误，尤其是公式错误、计算错误与记号不一致：
+
+1. 直接改 `src/` 下对应的分册（一份分册 = 一章，便于定位）；
+2. 提交前跑一次 `bash build/build.sh`，确认 0 error、0 缺字、无新增 Overfull；
+3. PR 描述写明涉及章节与题号；改动公式请附推导或验算过程。
+
+写作约定（结构模板、记号统一表、数学书写红线）见 [`work/STYLE.md`](work/STYLE.md)，新增章节请沿用。

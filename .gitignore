@@ -16,3 +16,7 @@ work/img/
 *.out
 *.toc
 *.synctex.gz
+
+# 课程课件与作业解答的全文抽取：含第三方教学材料内容，不入公开仓库
+# （本地可用 pdftotext 从课件重新生成，见 work/STYLE.md 第 8 节）
+work/txt/

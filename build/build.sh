@@ -39,6 +39,20 @@ JOB="$(printf '%s' "$BASE" | LC_ALL=C sed 's/[^A-Za-z0-9._-]/-/g; s/^[.-]*//; s/
 TEX="$TMP/$JOB.tex"
 LOG="$TMP/$JOB.log"
 
+# pandoc-crossref 过滤器：依次找 PATH、$PANDOC_DATA_DIR、pandoc 的 XDG 默认数据目录
+PANDOC_DATA="${PANDOC_DATA_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/pandoc}"
+if command -v pandoc-crossref >/dev/null 2>&1; then
+  CROSSREF="$(command -v pandoc-crossref)"
+elif [ -x "$PANDOC_DATA/filters/pandoc-crossref" ]; then
+  CROSSREF="$PANDOC_DATA/filters/pandoc-crossref"
+else
+  echo "错误：找不到 pandoc-crossref。三种放法任选其一：" >&2
+  echo "      1) 装进 PATH（推荐，见 https://github.com/lierdakil/pandoc-crossref/releases）" >&2
+  echo "      2) 放到 $PANDOC_DATA/filters/" >&2
+  echo "      3) 设置 PANDOC_DATA_DIR 指向含 filters/ 的目录" >&2
+  exit 1
+fi
+
 if ! compgen -G "$SRCDIR/*.md" > /dev/null; then
   echo "错误：$SRCDIR 下没有 .md 分册文件" >&2
   exit 1
@@ -56,7 +70,7 @@ while IFS= read -r f; do
     --from markdown+tex_math_dollars+pipe_tables+footnotes-auto_identifiers \
     --to latex \
     --resource-path="$SRCDIR:$ROOT:$ROOT/work/img" \
-    --filter /home/chilly/.local/share/pandoc/filters/pandoc-crossref \
+    --filter "$CROSSREF" \
     -M eqnPrefix= -M figPrefix= -M tblPrefix= -M secPrefix= \
     -o "$frag"
   FRAGS+=("$frag")
