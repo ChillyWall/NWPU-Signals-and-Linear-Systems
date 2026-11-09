@@ -3,7 +3,9 @@
 > 西北工业大学软件学院《信号与线性系统》期末复习手册：**105 页 PDF**，六章考点清单、33 个题型精解、公式速查附录。源码是 Markdown，pandoc + LaTeX 一键成书。
 
 <p align="center">
-  <a href="out/信号与线性系统-复习资料.pdf"><strong>📄 下载 PDF（105 页）</strong></a>
+  <a href="https://github.com/ChillyWall/NWPU-Signals-and-Linear-Systems/releases/latest">
+    <strong>📄 下载 PDF</strong>
+  </a>
   ·
   <a href="#快速开始">自行构建</a>
   ·
@@ -11,7 +13,7 @@
 </p>
 
 <p align="center"><em>
-A 105-page Chinese study guide for <strong>Signals and Linear Systems</strong> (NWPU, School of Software),
+A Chinese study guide for <strong>Signals and Linear Systems</strong> (NWPU, School of Software),
 written in Markdown and typeset with pandoc + LuaLaTeX + the Eisvogel template.<br>
 Content: 6 chapters × (exam-point checklist / core formulas / 33 worked problem types / common pitfalls),
 plus comparison and formula-reference appendices.
